@@ -1,0 +1,35 @@
+package com.example.chess_demo.entities;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+@Entity
+@Table(name="lesson_progress")
+@Data
+public class LessonProgress {
+    @Id
+    Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id",nullable=false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="lesson_id",nullable=false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    Lesson lesson;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="progress_id",nullable=false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    Progress progress;
+
+    int progressInLesson;
+}
