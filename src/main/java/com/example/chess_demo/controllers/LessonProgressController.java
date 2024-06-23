@@ -4,6 +4,7 @@ import com.example.chess_demo.entities.Lesson;
 import com.example.chess_demo.entities.LessonProgress;
 import com.example.chess_demo.requests.LessonProgressCreateRequest;
 import com.example.chess_demo.requests.LessonProgressUpdateRequest;
+import com.example.chess_demo.responses.LessonProgressResponse;
 import com.example.chess_demo.services.LessonProgressServices;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,26 +21,23 @@ public class LessonProgressController {
 
     // Tüm ilerlemeleri getirme
     @GetMapping
-    public List<LessonProgress> getAllProgress()
+    public List<LessonProgressResponse> getAllProgress()
     {
-        List<LessonProgress> progressList = lessonProgressService.getAllProgress();
-        return progressList;
+        return lessonProgressService.getAllProgress();
     }
 
     // Belirli bir kullanıcının ilerlemelerini getirme
     @GetMapping("/user/{userId}")
-    public List<LessonProgress> getUserProgress(@PathVariable Long userId)
+    public List<LessonProgressResponse> getUserProgress(@PathVariable Long userId)
     {
-        List<LessonProgress> userProgress = lessonProgressService.getUserProgress(userId);
-        return userProgress;
+        return lessonProgressService.getUserProgress(userId);
     }
 
     // Belirli bir dersin ilerlemelerini getirme
     @GetMapping("/lesson/{lessonId}")
-    public List<LessonProgress> getLessonProgress(@PathVariable Long lessonId)
+    public List<LessonProgressResponse> getLessonProgress(@PathVariable Long lessonId)
     {
-        List<LessonProgress> lessonProgress = lessonProgressService.getLessonProgress(lessonId);
-        return lessonProgress;
+        return lessonProgressService.getLessonProgress(lessonId);
     }
 
     // Yeni ilerleme oluşturma gerek var mı bilmiyorum çünkü progressController da bir metot var,evet gerek var
@@ -65,7 +63,7 @@ public class LessonProgressController {
 
     // Belirli bir kullanıcının belirli bir dersinin ilerlemesini getirme
     @GetMapping("/user/{userId}/lesson/{lessonId}")
-    public LessonProgress getUserLessonProgress(@PathVariable Long userId, @PathVariable Long lessonId)
+    public List<LessonProgressResponse> getUserLessonProgress(@PathVariable Long userId, @PathVariable Long lessonId)
     {
         return lessonProgressService.getUserLessonProgress(userId,lessonId);
 

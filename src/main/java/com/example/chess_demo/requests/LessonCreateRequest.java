@@ -7,4 +7,8 @@ public class LessonCreateRequest {
     Long id;
     String lessonName;
     String lessonDesc;
+    String lessonLevel;
+    String lessonImageUrl;
+    String content; // JSON string
+    String testQuestions; // JSON string
 }

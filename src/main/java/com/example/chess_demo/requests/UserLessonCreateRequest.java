@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class UserLessonCreateRequest {
-    Long id;
     Long userId;
     Long lessonId;
 }

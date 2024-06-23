@@ -1,10 +1,9 @@
 package com.example.chess_demo.services;
 
 import com.example.chess_demo.entities.Lesson;
-import com.example.chess_demo.entities.User;
 import com.example.chess_demo.repos.LessonRepository;
-import com.example.chess_demo.requests.LessonCreateRequest;
 import com.example.chess_demo.requests.LessonUpdateRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,58 +11,39 @@ import java.util.Optional;
 
 @Service
 public class LessonServices {
+
+    @Autowired
     private LessonRepository lessonRepository;
-
-    private UserServices userService;
-
-    public LessonServices(LessonRepository lessonRepository, UserServices userService) {
-        this.lessonRepository = lessonRepository;
-        this.userService = userService;
-    }
-
 
     public List<Lesson> getAllLessons() {
         return lessonRepository.findAll();
     }
 
-    public Lesson createOneLesson(LessonCreateRequest newLessonRequest) {
-        Lesson toSave = new Lesson();
-        toSave.setLessonId(newLessonRequest.getId());
-        toSave.setLessonName(newLessonRequest.getLessonName());
-        toSave.setLessonDesc(newLessonRequest.getLessonDesc());
-        return lessonRepository.save(toSave);
+    public Lesson createOneLesson(Lesson newLesson) {
+        return lessonRepository.save(newLesson);
     }
 
-    public Lesson getOneLessonById(Long lessonId) {
-        return lessonRepository.findById(lessonId).orElse(null);
+    public Optional<Lesson> getOneLessonById(Long lessonId) {
+        return lessonRepository.findById(lessonId);
     }
 
-
-    public Lesson updateOneLessonById(Long lessonId, LessonUpdateRequest updateLesson) {
-        Optional<Lesson> lesson = lessonRepository.findById(lessonId);
-        if(lesson.isPresent())
-        {
-            Lesson toUpdate = lesson.get();
-            toUpdate.setLessonName(updateLesson.getLessonName());
-            toUpdate.setLessonDesc(toUpdate.getLessonDesc());
-            lessonRepository.save(toUpdate);
-            return toUpdate;
+    public Lesson updateOneLessonById(Long lessonId, LessonUpdateRequest updateLessonRequest) {
+        Optional<Lesson> lessonOptional = lessonRepository.findById(lessonId);
+        if (lessonOptional.isPresent()) {
+            Lesson existingLesson = lessonOptional.get();
+            existingLesson.setLessonName(updateLessonRequest.getLessonName());
+            existingLesson.setLessonDesc(updateLessonRequest.getLessonDesc());
+            existingLesson.setLessonLevel(updateLessonRequest.getLessonLevel());
+            existingLesson.setLessonImageUrl(updateLessonRequest.getLessonImageUrl());
+            existingLesson.setContent(updateLessonRequest.getContent());
+            existingLesson.setTestQuestions(updateLessonRequest.getTestQuestions());
+            return lessonRepository.save(existingLesson);
+        } else {
+            return null;
         }
-        return null;
     }
 
     public void deleteOneLessonById(Long lessonId) {
         lessonRepository.deleteById(lessonId);
     }
-
-/*
-    public List<Lesson> getAllLessonByUserId(Long userId) {
-        User user = userService.getOneUser(userId);
-        if(user != null)
-        {
-            return lessonRepository.findByUserId(userId);
-        }
-        return null;
-    }
- */
 }

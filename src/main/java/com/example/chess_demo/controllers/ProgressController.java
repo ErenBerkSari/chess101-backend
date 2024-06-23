@@ -4,6 +4,8 @@ import com.example.chess_demo.entities.Progress;
 import com.example.chess_demo.requests.ProgressCreateRequest;
 import com.example.chess_demo.requests.ProgressUpdateRequest;
 import com.example.chess_demo.services.ProgressServices;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,9 +33,13 @@ public class ProgressController {
     }
 
     @GetMapping("/{progressId}")
-    public Progress getOneProgress(@PathVariable Long progressId)
-    {
-        return  progressService.getOneProgressById(progressId);
+    public ResponseEntity<Progress> getOneProgress(@PathVariable Long progressId) {
+        Optional<Progress> progressOptional = progressService.getOneProgressById(progressId);
+        if (progressOptional.isPresent()) {
+            return ResponseEntity.ok(progressOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
     @PutMapping("/{progressId}")
     public Progress updateOneProgress(@PathVariable Long progressId, @RequestBody ProgressUpdateRequest updateProgress)

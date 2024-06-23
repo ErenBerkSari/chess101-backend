@@ -7,5 +7,6 @@ public class LessonProgressCreateRequest {
     Long id;
     Long userId;
     Long lessonId;
+    Long progressId;
     int progressInLesson;
 }

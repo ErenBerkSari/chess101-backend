@@ -10,8 +10,13 @@ import lombok.Data;
 public class Progress {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "progress_id")
     Long progressId;
 
+    @Column(name = "progress_level")
     int progressLevel;
+
+    @Column(name = "completion_date")
     String completionDate;
 }

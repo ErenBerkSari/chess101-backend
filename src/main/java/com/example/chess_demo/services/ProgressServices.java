@@ -34,11 +34,11 @@ public class ProgressServices {
         Progress toSave = new Progress();
         toSave.setProgressId(newProgressRequest.getId());
         toSave.setProgressLevel(newProgressRequest.getProgressLevel());
-        toSave.setCompletionDate(newProgressRequest.getCompletion_date());
+        toSave.setCompletionDate(newProgressRequest.getCompletionDate());
         return progressRepository.save(toSave);
     }
-    public Progress getOneProgressById(Long progressId) {
-        return progressRepository.findById(progressId).orElse(null);
+    public Optional<Progress> getOneProgressById(Long progressId) {
+        return progressRepository.findById(progressId);
     }
     public Progress updateOneProgressById(Long progressId, ProgressUpdateRequest updateProgress) {
         Optional<Progress> progress = progressRepository.findById(progressId);

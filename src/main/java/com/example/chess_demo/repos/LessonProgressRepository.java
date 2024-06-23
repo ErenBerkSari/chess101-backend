@@ -9,7 +9,7 @@ public interface LessonProgressRepository extends JpaRepository<LessonProgress,L
 
     
 
-    LessonProgress findByUser_UserIdAndLesson_LessonId(Long userId, Long lessonId);
+    List<LessonProgress> findByUser_UserIdAndLesson_LessonId(Long userId, Long lessonId);
 
     List<LessonProgress> findByLesson_LessonId(Long lessonId);
 
