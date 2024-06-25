@@ -117,8 +117,10 @@
 				<configuration>
 					<source>17</source>
 					<target>17</target>
+					<release>17</release>
 				</configuration>
 			</plugin>
+
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
