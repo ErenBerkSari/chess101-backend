@@ -1,5 +1,7 @@
 package com.example.chess_demo.services;
 
+import com.example.chess_demo.dto.PasswordChangeDto;
+import com.example.chess_demo.dto.UserUpdateDto;
 import com.example.chess_demo.entities.User;
 import com.example.chess_demo.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,13 +49,37 @@ public class UserServices implements UserDetailsService {
         return userRepository.findById(userId);
     }
 
-    public User updateOneUser(Long userId, User newUser) {
-        return userRepository.findById(userId)
-                .map(user -> {
-                    user.setUsername(newUser.getUsername());
-                    user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-                    return userRepository.save(user);
-                }).orElse(null);
+    public User updateUser(Long id, UserUpdateDto userUpdateDto) throws Exception {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (userUpdateDto.getUsername() != null) {
+                user.setUsername(userUpdateDto.getUsername());
+            }
+            if (userUpdateDto.getPassword() != null) {
+                user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+            }
+            return userRepository.save(user);
+        } else {
+            throw new Exception("User not found");
+        }
+    }
+
+    public User changePassword(Long id, PasswordChangeDto passwordChangeDto) throws Exception {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (passwordEncoder.matches(passwordChangeDto.getCurrentPassword(), user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(passwordChangeDto.getNewPassword()));
+                return userRepository.save(user);
+            } else {
+                throw new Exception("Current password is incorrect");
+            }
+        } else {
+            throw new Exception("User not found");
+        }
     }
 
     public User updateUserRole(Long userId, String newRole) {

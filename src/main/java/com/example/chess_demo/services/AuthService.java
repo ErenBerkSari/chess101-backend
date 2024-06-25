@@ -1,6 +1,7 @@
 package com.example.chess_demo.services;
 
 import com.example.chess_demo.dto.ReqRes;
+import com.example.chess_demo.dto.UserUpdateDto;
 import com.example.chess_demo.entities.User;
 import com.example.chess_demo.entities.UserProgress;
 import com.example.chess_demo.repos.UserProgressRepository;
@@ -9,11 +10,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+
+import com.example.chess_demo.dto.ReqRes;
+import com.example.chess_demo.entities.User;
+import com.example.chess_demo.entities.UserProgress;
+import com.example.chess_demo.repos.UserProgressRepository;
+import com.example.chess_demo.repos.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+
+import com.example.chess_demo.dto.ReqRes;
+import com.example.chess_demo.dto.UserUpdateDto;
+import com.example.chess_demo.entities.User;
+import com.example.chess_demo.entities.UserProgress;
+import com.example.chess_demo.repos.UserProgressRepository;
+import com.example.chess_demo.repos.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
@@ -26,12 +51,50 @@ public class AuthService {
 
     @Autowired
     private JWTUtils jwtUtils;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
-
+//    public ReqRes signUp(ReqRes registrationRequest) {
+//        ReqRes resp = new ReqRes();
+//        try {
+//            if (ourUserRepo.findByEmail(registrationRequest.getUsername()).isPresent()) {
+//                resp.setStatusCode(400);
+//                resp.setMessage("Email already in use");
+//                return resp;
+//            }
+//
+//            User ourUsers = new User();
+//            ourUsers.setRealUsername(registrationRequest.getUsername());
+//            ourUsers.setEmail(registrationRequest.getEmail());
+//            ourUsers.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+//            ourUsers.setRole("USER");
+//            User ourUserResult = ourUserRepo.save(ourUsers);
+//            System.out.println("User registered: " + ourUserResult);
+//
+//            UserProgress userProgress = new UserProgress();
+//            userProgress.setUser(ourUserResult);
+//            userProgress.setProgressInUser(0);
+//            userProgressRepository.save(userProgress);
+//
+//            resp.setOurUsers(ourUserResult);
+//            resp.setMessage("User Saved Successfully");
+//            resp.setStatusCode(200);
+//            String jwt = jwtUtils.generateToken(ourUserResult);
+//            resp.setToken(jwt);
+//            resp.setUserId(ourUserResult.getUserId());
+//            resp.setRole(ourUserResult.getRole());
+//            resp.setUsername(ourUserResult.getRealUsername());
+//
+//        } catch (Exception e) {
+//            resp.setStatusCode(500);
+//            resp.setError(e.getMessage());
+//        }
+//        return resp;
+//    }
 
     public ReqRes signUp(ReqRes registrationRequest) {
         ReqRes resp = new ReqRes();
@@ -41,7 +104,6 @@ public class AuthService {
                 resp.setMessage("Email already in use");
                 return resp;
             }
-
             User ourUsers = new User();
             ourUsers.setUsername(registrationRequest.getUsername());
             ourUsers.setEmail(registrationRequest.getEmail());
@@ -49,14 +111,7 @@ public class AuthService {
             ourUsers.setRole("USER");
             User ourUserResult = ourUserRepo.save(ourUsers);
             System.out.println("User registered: " + ourUserResult);
-
-            // Kullanıcı kaydedildikten sonra UserProgress oluştur
             if (ourUserResult != null && ourUserResult.getUserId() > 0) {
-                UserProgress userProgress = new UserProgress();
-                userProgress.setUser(ourUserResult);
-                userProgress.setProgressInUser(0); // Başlangıç progresi 0 olarak ayarlıyoruz
-                userProgressRepository.save(userProgress);
-
                 resp.setOurUsers(ourUserResult);
                 resp.setMessage("User Saved Successfully");
                 resp.setStatusCode(200);
@@ -71,6 +126,7 @@ public class AuthService {
         }
         return resp;
     }
+
 
     public ReqRes signIn(ReqRes signinRequest) {
         ReqRes response = new ReqRes();
@@ -88,6 +144,7 @@ public class AuthService {
             response.setUserId(user.getUserId());
             response.setMessage("Successfully Signed In");
             response.setRole(user.getRole());
+            response.setUsername(user.getRealUsername());
         } catch (AuthenticationException e) {
             response.setStatusCode(401);
             response.setError("Invalid email or password");
@@ -97,7 +154,6 @@ public class AuthService {
         }
         return response;
     }
-
 
     public ReqRes refreshToken(ReqRes refreshTokenRequest){
         ReqRes response = new ReqRes();
@@ -116,4 +172,27 @@ public class AuthService {
         }
         return response;
     }
+
+    public ReqRes updateUser(Long userId, UserUpdateDto userUpdateDto) {
+        ReqRes resp = new ReqRes();
+        try {
+            User user = ourUserRepo.findById(userId)
+                    .orElseThrow(() -> new Exception("User not found with id: " + userId));
+            if (userUpdateDto.getUsername() != null && !userUpdateDto.getUsername().isEmpty()) {
+                user.setRealUsername(userUpdateDto.getUsername());
+            }
+            if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+            }
+            User updatedUser = ourUserRepo.save(user);
+            resp.setStatusCode(200);
+            resp.setMessage("User updated successfully");
+            resp.setOurUsers(updatedUser);
+        } catch (Exception e) {
+            resp.setStatusCode(500);
+            resp.setError(e.getMessage());
+        }
+        return resp;
+    }
 }
+

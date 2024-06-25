@@ -34,8 +34,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**", "/public/**", "/lessons/**", "/user-avatars/**").permitAll() // Eklenen kısım
-                        .requestMatchers("/userLesson/**", "/userProgress/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/auth/**", "/public/**", "/lessons/**", "/user-avatars/**").permitAll()
+                        .requestMatchers("/userLesson/**", "/userProgress/**", "/api/users/**").hasAnyAuthority("USER", "ADMIN") // Added /api/users/** with USER and ADMIN authority
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/user/**").hasAuthority("USER")
                         .anyRequest().authenticated()
@@ -54,8 +54,7 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-/*
-* sdfgs*/
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

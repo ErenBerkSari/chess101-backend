@@ -12,27 +12,40 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
-@Table(name = "users") // Tablo adını değiştirdik
+@Table(name = "users")
 @Data
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id") // Sütun adını belirttik
+    @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "username") // Sütun adını belirttik
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "password") // Sütun adını belirttik
+    @Column(name = "password")
     private String password;
 
-    @Column(name = "email",unique = true) // Sütun adını belirttik
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "role") // Sütun adını belirttik
+    @Column(name = "role")
     private String role;
 
     @Column(name = "avatar_url")
@@ -42,18 +55,23 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> badges = new HashSet<>();
 
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));
     }
 
-
     @Override
     public String getUsername() {
-        return email;
-    }//değiştirdim
+        return email; // Kullanıcı adı olarak email'i döndürüyor
+    }
+
+    public String getRealUsername() {
+        return username; // Gerçek kullanıcı adını döndürüyor
+    }
+
+    public void setRealUsername(String username) {
+        this.username = username; // Gerçek kullanıcı adını ayarlıyor
+    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -74,5 +92,6 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }
+
+///2

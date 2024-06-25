@@ -1,5 +1,7 @@
 package com.example.chess_demo.controllers;
 
+import com.example.chess_demo.dto.PasswordChangeDto;
+import com.example.chess_demo.dto.UserUpdateDto;
 import com.example.chess_demo.entities.User;
 import com.example.chess_demo.services.UserServices;
 import com.example.chess_demo.util.FileUploadUtil;
@@ -55,13 +57,23 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<User> updateOneUser(@PathVariable Long userId, @RequestBody User newUser) {
-        User updatedUser = userServices.updateOneUser(userId, newUser);
-        if (updatedUser != null) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateDto userUpdateDto) {
+        try {
+            User updatedUser = userServices.updateUser(id, userUpdateDto);
             return ResponseEntity.ok(updatedUser);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    @PutMapping("/{id}/change-password")
+    public ResponseEntity<?> changePassword(@PathVariable Long id, @RequestBody PasswordChangeDto passwordChangeDto) {
+        try {
+            User updatedUser = userServices.changePassword(id, passwordChangeDto);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
